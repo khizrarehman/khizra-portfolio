@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/*
+  Design tokens.
+  Palette: warm ivory "paper" ground, deep warm ink type, and two
+  restrained accents — pink (personal/interactive) and a muted
+  biological green (scientific/annotation). Both are used sparingly;
+  neither should read as decoration for its own sake.
+  This site is intentionally light-only; there is no dark-mode variant.
+*/
+:root {
+  --color-paper: #faf7f1;
+  --color-paper-deep: #f1ebe0;
+  --color-ink: #1b1712;
+  --color-ink-muted: #6b6255;
+  --color-pink: #b8305f;
+  --color-pink-deep: #8f2249;
+  --color-pink-tint: #f4dce6;
+  --color-green: #5f7a55;
+  --color-green-deep: #45593d;
+  --color-green-tint: #e5ead9;
+  --color-line: #ded4c4;
+  --color-line-strong: #b7aa92;
+
+  /* Layout rhythm */
+  --content-max: 42rem;
+  --shell-max: 84rem;
+  --gutter: 1.25rem;
+}
+
+@theme inline {
+  --color-paper: var(--color-paper);
+  --color-paper-deep: var(--color-paper-deep);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-pink: var(--color-pink);
+  --color-pink-deep: var(--color-pink-deep);
+  --color-pink-tint: var(--color-pink-tint);
+  --color-green: var(--color-green);
+  --color-green-deep: var(--color-green-deep);
+  --color-green-tint: var(--color-green-tint);
+  --color-line: var(--color-line);
+  --color-line-strong: var(--color-line-strong);
+
+  --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-newsreader);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  position: relative;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* A faint, static paper-grain texture — gives the ivory ground a printed,
+   considered feel instead of a flat digital one. No motion. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* A faint lab-notebook grid, used as a backdrop for specimen-style framing. */
+.bg-lab-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-line) 70%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-line) 70%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 44px 44px;
+}
