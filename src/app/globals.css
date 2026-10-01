@@ -26,6 +26,34 @@
   --content-max: 42rem;
   --shell-max: 84rem;
   --gutter: 1.25rem;
+  /* The floating nav's height, and the space it takes from the top of the
+     viewport including a notch/status-bar safe area (viewport-fit=cover). */
+  --nav-h: 4rem;
+  --nav-offset: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --gutter: 2rem;
+  }
+}
+
+/* Landscape phones: every pixel of height counts, so the nav is slimmer. */
+@media (max-height: 31.25rem) {
+  :root {
+    --nav-h: 3rem;
+  }
+}
+
+/* Short viewports (landscape phones) — for the few compositions that
+   genuinely need to tighten vertically rather than just scale fluidly. */
+@custom-variant short (@media (max-height: 31.25rem));
+
+/* Horizontal page padding: the fluid gutter, widened to clear a notch or
+   rounded corner in landscape (env() is 0 everywhere else). */
+@utility px-gutter {
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
 }
 
 @theme inline {
@@ -43,8 +71,14 @@
   --color-line-strong: var(--color-line-strong);
 
   --font-sans: var(--font-geist-sans);
-  --font-serif: var(--font-newsreader);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces);
+}
+
+/* Nothing may ever scroll sideways. `clip` (unlike `hidden`) doesn't
+   create a scroll container, so the journey's sticky stage keeps working. */
+html,
+body {
+  overflow-x: clip;
 }
 
 body {
@@ -67,18 +101,114 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* A faint lab-notebook grid, used as a backdrop for specimen-style framing. */
-.bg-lab-grid {
-  background-image:
-    linear-gradient(
-      to right,
-      color-mix(in srgb, var(--color-line) 70%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--color-line) 70%, transparent) 1px,
-      transparent 1px
-    );
-  background-size: 44px 44px;
+/*
+  Typography: two faces only.
+  - Display (Fraunces, `font-display`): the name, chapter titles, post
+    and research titles, and short statement lines. Fully "soft" and
+    "wonky" for the rounded, editorial 1970s character; optical sizing
+    is automatic, so it gets finer and higher-contrast as it grows.
+  - Sans (Geist, `font-sans`, the default): navigation, dates,
+    metadata, labels, excerpts and body copy.
+*/
+.font-display {
+  font-variation-settings: "SOFT" 100, "WONK" 1;
+  font-optical-sizing: auto;
+  letter-spacing: -0.015em;
+}
+
+/*
+  The homepage journey (components/scroll/Journey.tsx). All chapters
+  share one stage, so with motion enabled only frames that are
+  currently legible take pointer input — an invisible post can never
+  intercept a click meant for the visible one.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  [data-journey] [data-chapter-id],
+  [data-journey] [data-frame] {
+    pointer-events: none;
+  }
+  [data-journey] [data-frame][data-active="true"] :is(a, button) {
+    pointer-events: auto;
+  }
+}
+
+/* While a post is hovered or focused, everything else on the stage recedes.
+   Hover only where hover is real — on touch screens a tap leaves a sticky
+   :hover behind, which would keep the stage dimmed after returning. */
+[data-stage] [data-frame] {
+  transition: filter 0.7s ease;
+}
+[data-stage]:has([data-post]:focus-visible) [data-frame]:not(:has([data-post]:focus-visible)) {
+  filter: opacity(0.35);
+}
+@media (hover: hover) {
+  [data-stage]:has([data-post]:hover) [data-frame]:not(:has([data-post]:hover)) {
+    filter: opacity(0.35);
+  }
+}
+
+/*
+  Keyboard focus, everywhere: a fine ring in the signature pink, held a
+  little away from the element (elements that need more room set
+  --focus-offset). Unlayered, so no utility can accidentally switch it
+  off. Only for :focus-visible — mouse and touch never see it.
+*/
+:focus-visible {
+  outline: 1.5px solid var(--color-pink);
+  outline-offset: var(--focus-offset, 4px);
+}
+/* The paw prints are deliberately faint; a focused one comes fully into view. */
+[data-paw]:focus-visible {
+  opacity: 1 !important;
+}
+
+/* Taps get their own press feedback (see JournalPost, HeroCat), so the
+   browser's grey tap flash would only muddy it. */
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/*
+  The hero name. One line from tablets up — sized to fill the width but
+  capped by height, so a landscape phone keeps room for the tagline. On
+  narrow portrait screens a single line would shrink to a small heading,
+  so the name stacks onto two centred lines and can stay large instead.
+  Widths measured from Fraunces at the hero's weight: "Khizra Rehman" is
+  6.24em wide, "Rehman" 3.39em and "Khizra" 2.69em.
+*/
+.hero-name {
+  font-size: min(10.5rem, 13vw, (100vw - 2 * var(--gutter)) / 6.6, 24svh);
+  /* Where "Khizra" begins, relative to the name's box (HeroCat reads it). */
+  --khizra-left: 0em;
+}
+@media (max-width: 39.99rem) {
+  .hero-name {
+    font-size: min((100vw - 2 * var(--gutter)) / 3.75, 13svh);
+    /* Centred lines: "Khizra" is inset by half of its difference to "Rehman". */
+    --khizra-left: calc((3.388em - 2.693em) / 2);
+  }
+}
+
+/* The no-WebGL field (StaticField): each sphere drifts a few px, very slowly. */
+@media (prefers-reduced-motion: no-preference) {
+  .static-field circle {
+    transform-box: fill-box;
+    animation: static-drift 24s ease-in-out infinite alternate;
+  }
+}
+@keyframes static-drift {
+  to {
+    transform: translate(5px, -7px);
+  }
+}
+
+/* Hero cat: the paper knockout copy drawn beneath the ink (HeroCat's <Inked>). */
+.cat-halo,
+.cat-halo * {
+  fill: var(--color-paper);
+  stroke: var(--color-paper);
+  stroke-width: 9px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
 }

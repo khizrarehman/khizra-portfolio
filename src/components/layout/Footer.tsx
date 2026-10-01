@@ -1,46 +1,37 @@
-import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { profile } from "@/content/profile";
+import { NAV_LINKS } from "@/components/layout/navLinks";
+import { ChapterLink } from "@/components/layout/ChapterLink";
 import { Tag } from "@/components/ui/Tag";
 import { EasterEggSlot } from "@/components/ui/EasterEggSlot";
 
-const links = [
-  { href: "/research", label: "Research" },
-  { href: "/journal", label: "Journal" },
-  { href: "/archive", label: "Archive" },
-  { href: "/about", label: "About" },
-];
 
 export function Footer() {
   return (
-    <footer className="border-t border-line">
+    <footer className="pt-20 pb-[max(2.5rem,calc(env(safe-area-inset-bottom)+1.5rem))] sm:pt-28">
       <Container>
-        <div className="flex flex-col gap-8 py-12 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex flex-col gap-3">
-            <span className="font-serif text-lg text-ink italic">
-              Khizra Rehman
-            </span>
-            <div className="flex items-center gap-2.5">
-              <Tag>Site index</Tag>
-              <EasterEggSlot />
-            </div>
+        <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="font-display text-lg font-semibold text-ink">{profile.name}</span>
+            <EasterEggSlot />
           </div>
 
           <ul className="flex flex-wrap gap-x-8 gap-y-2">
-            {links.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="font-sans text-sm text-ink-muted transition-colors hover:text-pink"
+            {NAV_LINKS.map((link) => (
+              <li key={link.chapter}>
+                <ChapterLink
+                  chapter={link.chapter}
+                  className="-my-2 inline-block py-2 font-sans text-sm text-ink-muted transition-colors hover:text-pink"
                 >
                   {link.label}
-                </Link>
+                </ChapterLink>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="border-t border-line py-6">
-          <Tag>© {new Date().getFullYear()} Khizra Rehman</Tag>
+        <div className="mt-10">
+          <Tag>© {new Date().getFullYear()} {profile.name}</Tag>
         </div>
       </Container>
     </footer>

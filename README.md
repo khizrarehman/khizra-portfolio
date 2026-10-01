@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Khizra Rehman
 
-## Getting Started
+Personal site of Khizra Rehman — research, writing and a little cat.
 
-First, run the development server:
+A single-page Next.js (App Router) site: one continuous, scroll-driven
+journey (GSAP ScrollTrigger + Lenis) through Substack, Research, the
+creative archive, Experience, Education and About, over a persistent
+three.js particle field (react-three-fiber). Without WebGL it falls back
+to a static 2D field; with `prefers-reduced-motion` it becomes a plain
+readable page.
+
+## Develop
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
+npm run lint
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Content
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Everything visitors read lives in `src/content/` — profile, research,
+experience, education, creative work and Substack posts. Components only
+render it. Keep every factual claim traceable to Khizra's CV or her
+Substack (see the notes at the top of each file).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Substack posts** (`src/content/journal.ts`) are a hand-copied snapshot
+of real posts, so the site never depends on Substack at runtime. To
+refresh it, update the posts and `retrievedAt` from
+`https://kworld.substack.com/api/v1/archive`.
 
-## Learn More
+**Creative archive** (`src/content/creative.ts`) is intentionally empty.
+While it is, the chapter is a one-line interlude and the nav omits it;
+adding entries brings both back.
 
-To learn more about Next.js, take a look at the following resources:
+## Deploy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Deploys to Vercel (or any Next.js host) with no required environment
+variables. One optional setting:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Variable               | Purpose                                                                                                                                                  |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL` | The public origin, e.g. `https://example.com`. Used for canonical, Open Graph, robots and sitemap URLs. On Vercel it defaults to the project's production domain. |
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Post cover images are optimised by Next's image optimiser from
+`substackcdn.com` (allowed in `next.config.ts`).

@@ -23,7 +23,7 @@ export { gsap, ScrollTrigger };
  * unmount or when `deps` change.
  */
 export function useGsap(
-  setup: () => void,
+  setup: () => void | (() => void),
   scope?: RefObject<Element | null>,
   deps: unknown[] = []
 ) {

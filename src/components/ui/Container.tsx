@@ -14,7 +14,7 @@ export function Container({
   return (
     <div
       className={cn(
-        "mx-auto w-full px-5 sm:px-8",
+        "mx-auto w-full px-gutter",
         narrow ? "max-w-[42rem]" : "max-w-[84rem]",
         className
       )}

@@ -27,7 +27,7 @@ export function Tag({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-2 font-mono text-[0.6875rem] font-medium tracking-[0.16em] uppercase",
+        "inline-flex items-center gap-2 font-sans text-[0.6875rem] font-medium tracking-[0.18em] uppercase",
         colors[variant],
         className
       )}
